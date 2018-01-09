@@ -1,0 +1,43 @@
+{
+  "provisioners": [
+    {
+      "type": "powershell",
+      "inline": [
+        "Add-WindowsFeature Web-Server"
+      ]
+    },
+    {
+      "type": "powershell",
+      "inline": [
+        "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\InitializeInstance.ps1 -Schedule",
+        "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\SysprepInstance.ps1 -NoShutdown"
+      ]
+    }
+  ],
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "region": "eu-west-1",
+      "associate_public_ip_address": "true",
+      "instance_type": "t2.large",
+      "user_data_file":"packer/windows/ec2_userdata.ps1",
+      "communicator": "winrm",
+      "winrm_username": "Administrator",
+      "winrm_use_ssl": true,
+      "winrm_insecure": true,
+      "source_ami_filter": {
+        "filters": {
+          "virtualization-type": "hvm",
+          "name": "Windows_Server-2016-English-Full-Base-*",
+          "root-device-type": "ebs"
+        },
+        "owners": [
+            "amazon"
+        ],
+        "most_recent": true
+      },
+      "shutdown_behavior": "terminate",
+      "ami_name": "windows-server-2016-packer-{{ isotime \"2006.01.02T0304\" }}"
+    }
+  ]
+}

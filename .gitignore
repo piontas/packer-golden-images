@@ -3,3 +3,11 @@ packer_cache/
 
 # For built boxes
 *.box
+
+# Ansible
+*.retry
+
+# Envs, IDs
+.idea
+.venv
+.build

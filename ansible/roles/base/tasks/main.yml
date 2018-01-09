@@ -1,0 +1,11 @@
+---
+# tasks file for base
+
+- name: install yum packages
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - jq
+    - git
+    - nfs-utils

@@ -1,0 +1,5 @@
+ansible
+awscli
+botocore
+boto3
+azure-cli

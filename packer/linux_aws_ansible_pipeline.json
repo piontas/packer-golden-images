@@ -1,0 +1,42 @@
+{
+  "variables": {
+    "aws_region": "{{ env `AWS_REGION` }}",
+    "ami_filter": "{{ env `AMI_FILTER` }}",
+    "ami_prefix": "{{ env `AMI_PREFIX` }}",
+    "os_version": "{{ env `OS_VERSION` }}"
+  },
+  "provisioners": [
+    {
+      "type": "ansible",
+      "playbook_file": "ansible/base_linux_image.yml",
+      "user": "ec2-user"
+    }
+  ],
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "region": "{{ user `aws_region` }}",
+      "associate_public_ip_address": "true",
+      "instance_type": "t2.small",
+      "ssh_username": "ec2-user",
+      "source_ami_filter": {
+        "filters": {
+          "architecture": "x86_64",
+          "virtualization-type": "hvm",
+          "root-device-type": "ebs",
+          "name": "{{ user `ami_filter` }}"
+        },
+        "owners": ["amazon"],
+        "most_recent": true
+      },
+      "force_deregister": true,
+      "force_delete_snapshot": true,
+      "ami_name": "{{ user `ami_prefix` }}-{{ isotime \"2006.01.02T0304\" }}",
+      "tags": {
+        "OS": "{{ user `os_version` }}",
+        "Image": "{{ user `ami_prefix` }}",
+        "ReleaseDate": "{{ isotime }}"
+      }
+    }
+  ]
+}

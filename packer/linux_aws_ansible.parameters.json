@@ -1,0 +1,5 @@
+{
+  "ami_filter": "amzn-ami-hvm-*-x86_64-gp2",
+  "ami_prefix": "amazon-linux-ansible-packer",
+  "os_version": "Amazon Linux Base AMI"
+}

@@ -1,0 +1,52 @@
+{
+  "variables": {
+    "subscription_id": "{{ env `SUBSCRIPTION_ID` }}",
+    "client_id": "{{ env `CLIENT_ID` }}",
+    "client_secret": "{{ env `CLIENT_SECRET` }}",
+    "tenant_id": "{{ env `TENANT_ID` }}",
+    "object_id": "{{ env `OBJECT_ID` }}",
+    "location": "{{ env `LOCATION` }}",
+    "resource_group_name": "{{ env `RESOURCE_GROUP_NAME` }}",
+    "storage_account": "{{ env `STORAGE_ACCOUNT` }}"
+  },
+  "provisioners": [
+    {
+      "type": "powershell",
+      "inline": [
+        "Add-WindowsFeature Web-Server"
+      ]
+    },
+    {
+      "type": "powershell",
+      "inline": [
+        "if( Test-Path $Env:SystemRoot\\windows\\system32\\Sysprep\\unattend.xml ){ rm $Env:SystemRoot\\windows\\system32\\Sysprep\\unattend.xml -Force}",
+        "& $Env:SystemRoot\\System32\\Sysprep\\Sysprep.exe /oobe /generalize /shutdown /quiet"
+      ]
+    }
+  ],
+  "builders": [
+    {
+      "type": "azure-arm",
+      "subscription_id": "{{ user `subscription_id` }}",
+      "client_id": "{{ user `client_id` }}",
+      "client_secret": "{{ user `client_secret` }}",
+      "tenant_id": "{{ user `tenant_id` }}",
+      "object_id": "{{ user `object_id` }}",
+      "location": "{{ user `location` }}",
+      "resource_group_name": "{{ user `resource_group_name` }}",
+      "storage_account": "{{ user `storage_account` }}",
+      "capture_container_name": "images",
+      "capture_name_prefix": "packer",
+      "os_type": "Windows",
+      "image_publisher": "MicrosoftWindowsServer",
+      "image_offer": "WindowsServer",
+      "image_sku": "2016-Datacenter",
+      "communicator": "winrm",
+      "winrm_use_ssl": "true",
+      "winrm_insecure": "true",
+      "winrm_timeout": "3m",
+      "winrm_username": "packer",
+      "vm_size": "Standard_DS2_v2"
+    }
+  ]
+}

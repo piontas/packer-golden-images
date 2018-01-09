@@ -1,0 +1,7 @@
+---
+- name: build windows base image
+  hosts: default:windows
+  gather_facts: false
+
+  roles:
+    - base_windows

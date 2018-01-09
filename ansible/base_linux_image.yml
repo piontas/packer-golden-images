@@ -1,0 +1,15 @@
+---
+- name: build amazon linux image
+  hosts: default:packer
+  gather_facts: false
+  become: true
+  become_method: sudo
+
+  tasks:
+    - name: upgrade all packages
+      yum:
+        name: '*'
+        state: latest
+
+  roles:
+    - base

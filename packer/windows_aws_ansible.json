@@ -1,0 +1,63 @@
+{
+  "variables": {
+    "aws_region": "{{ env `AWS_REGION` }}",
+    "ami_filter": "{{ env `AMI_FILTER` }}",
+    "ami_prefix": "{{ env `AMI_PREFIX` }}",
+    "os_version": "{{ env `OS_VERSION` }}",
+    "secure_ip": "{{ env `SECURE_IP` }}"
+  },
+  "provisioners": [
+    {
+      "type": "ansible",
+      "playbook_file": "ansible/base_windows_image.yml",
+      "user": "Administrator",
+      "extra_arguments": [
+        "--connection", "packer",
+        "--extra-vars", "ansible_shell_type=powershell ansible_shell_executable=None ansible_winrm_server_cert_validation=ignore"
+      ]
+    },
+    {
+      "type": "windows-restart"
+    },
+    {
+      "type": "powershell",
+      "inline": [
+        "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\InitializeInstance.ps1 -Schedule",
+        "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\SysprepInstance.ps1 -NoShutdown"
+      ]
+    }
+  ],
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "region": "{{ user `aws_region` }}",
+      "associate_public_ip_address": "true",
+      "instance_type": "t2.large",
+      "user_data_file":"packer/windows/ec2_userdata.ps1",
+      "communicator": "winrm",
+      "winrm_username": "Administrator",
+      "winrm_use_ssl": true,
+      "winrm_insecure": true,
+      "source_ami_filter": {
+        "filters": {
+          "virtualization-type": "hvm",
+          "name": "{{ user `ami_filter` }}",
+          "root-device-type": "ebs"
+        },
+        "owners": [
+            "amazon"
+        ],
+        "most_recent": true
+      },
+      "temporary_security_group_source_cidr": "{{ user `secure_ip` }}",
+      "force_deregister": true,
+      "force_delete_snapshot": true,
+      "ami_name": "{{ user `ami_prefix` }}-{{ isotime \"2006.01.02T0304\" }}",
+      "tags": {
+        "OS": "{{ user `os_version` }}",
+        "Image": "{{ user `ami_prefix` }}",
+        "ReleaseDate": "{{ isotime }}"
+      }
+    }
+  ]
+}

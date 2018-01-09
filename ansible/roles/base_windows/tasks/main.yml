@@ -1,0 +1,27 @@
+---
+# tasks file for base_windows
+
+- name: invoke dsc with check mode
+  win_dsc:
+    resource_name: windowsfeature
+    name: "{{ item }}"
+  with_items:
+    - windows-defender
+    - windows-defender-features
+
+- name: install developer tools
+  win_chocolatey:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - git
+    - openssh
+    - atom
+    - python3
+    - awscli
+    - opera
+
+  register: task_result
+  until: task_result.rc == 0
+  retries: 3
+  delay: 1

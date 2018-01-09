@@ -1,0 +1,5 @@
+{
+  "ami_filter": "Windows_Server-2016-English-Full-Base-*",
+  "ami_prefix": "windows-server-2016-packer",
+  "os_version": "Windows Server 2016 Base"
+}

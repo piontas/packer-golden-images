@@ -1,0 +1,5 @@
+{
+  "location": "northeurope",
+  "resource_group_name": "packer-rg",
+  "storage_account": "packersahashicorpdemo"
+}

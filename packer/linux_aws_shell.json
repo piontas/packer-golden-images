@@ -1,0 +1,24 @@
+{
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+        "sudo yum install -y git",
+        "sudo yum install -y nginx mysql-client",
+        "sudo sed -i -e 's/nginx/packer/g' /usr/share/nginx/html/index.html",
+        "sudo chkconfig nginx on"
+      ]
+    }
+  ],
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "region": "eu-west-1",
+      "associate_public_ip_address": "true",
+      "instance_type": "t2.micro",
+      "ssh_username": "ec2-user",
+      "source_ami": "ami-1a962263",
+      "ami_name": "amazon-linux-packer-{{ isotime \"2006.01.02T0304\" }}"
+    }
+  ]
+}
